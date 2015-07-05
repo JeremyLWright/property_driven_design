@@ -130,10 +130,19 @@ class generator<minmax::measure_pair_t>
 		return this->operator()(0);
 	}
 
-	result_type operator()(size_t size)
+	result_type operator()(const size_t size)
 	{
-		auto rational_gen = generator<std::size_t>();
-		return std::make_pair(rational_gen(size), rational_gen(size));
+		const auto non_zero_gen = [size]()
+		{
+			auto rational_gen = generator<std::size_t>();
+			auto temp = rational_gen(size);
+			if(temp == 0)
+				return temp + 1;
+			return temp;
+		};
+		const auto measure = non_zero_gen();
+		const auto factor = non_zero_gen();
+		return std::make_pair(measure*factor, measure);
 	}
 };
 
