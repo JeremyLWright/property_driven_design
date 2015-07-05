@@ -142,7 +142,7 @@ class generator<minmax::measure_pair_t>
 		};
 		const auto measure = non_zero_gen();
 		const auto factor = non_zero_gen();
-		return std::make_pair(measure*factor, measure);
+		return std::make_pair(measure, measure*factor);
 	}
 };
 
@@ -170,8 +170,10 @@ TEST_F(MinMaxFixture, prop_minimum_pair_should_return_a_measure_pair)
 TEST(MinMaxDirected, directed_minimum_pair_shouls_return_a_measure_pair)
 {
 	std::vector<minmax::measure_pair_t> failed_test_case{
-		std::make_pair(2, 1),
-		std::make_pair(1,1)};
+		std::make_pair(1, 2),
+		std::make_pair(1, 1)};
+
+	EXPECT_TRUE(minmax::is_measure_pair(failed_test_case[0]));
 	EXPECT_TRUE(prop_minimum_pair_should_return_a_measure_pair_t()(failed_test_case));
 }
 
