@@ -33,7 +33,8 @@ bool is_measure_pair(const measure_pair_t& x)
 
 bool operator<(const measure_pair_t& rhs, const measure_pair_t& lhs)
 {
-	return rhs.second < lhs.second;
+	return std::tie(rhs.second, rhs.first) 
+		< std::tie(lhs.second, lhs.first);
 }
 
 measure_pair_t min_pair(const measure_pair_t& a, const measure_pair_t& b)
@@ -49,7 +50,10 @@ measure_pair_t min_pair(const measure_pair_t& a, const measure_pair_t& b)
 template <typename SinglePassRange>
 measure_pair_t minimum_pair(const SinglePassRange& xs)
 {
-	return *std::begin(xs);
+	return *std::min_element(
+			std::begin(xs),
+			std::end(xs),
+			::minmax::operator<);
 }
 
 }
