@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <autocheck/sequence.hpp>
 #include <autocheck/check.hpp>
+#include <autocheck/generator.hpp>
 
 #include "minmax.hpp"
 
@@ -104,5 +105,55 @@ TEST_F(MinMaxFixture, prop_maximum_should_return_a_value_from_the_list)
 		arbitrary,
 		rep,
 		cls);
+}
 
+struct prop_minimum_pair_should_return_a_measure_pair_t
+{
+	bool operator()(const std::vector<minmax::measure_pair_t>& xs) const
+	{
+		using namespace minmax;
+		const auto test_pair = minimum_pair(xs);
+		return is_measure_pair(test_pair);
+	}
+};
+
+namespace autocheck
+{
+template <>
+class generator<minmax::measure_pair_t>
+{
+	public:
+	using result_type = minmax::measure_pair_t;
+
+	result_type operator()()
+	{
+		return this->operator()(0);
+	}
+
+	result_type operator()(size_t size)
+	{
+		auto rational_gen = generator<std::size_t>();
+		return std::make_pair(rational_gen(size), rational_gen(size));
+	}
+};
+
+//Make sure we can print something if there is an error
+std::ostream& operator<<(std::ostream& os, const minmax::measure_pair_t& p)
+{
+	os << "{" << p.first << ", " << p.second << "}";
+	return os;
+}
+
+}
+
+TEST_F(MinMaxFixture, prop_minimum_pair_should_return_a_measure_pair)
+{
+	const auto arbitrary = autocheck::discard_if([](const std::vector<minmax::measure_pair_t>& xs) -> bool { return xs.size() == 0; },
+			autocheck::make_arbitrary<std::vector<minmax::measure_pair_t>>());
+  
+	autocheck::check<std::vector<minmax::measure_pair_t>>(
+		prop_minimum_pair_should_return_a_measure_pair_t(),
+		100,
+		arbitrary,
+		rep);
 }

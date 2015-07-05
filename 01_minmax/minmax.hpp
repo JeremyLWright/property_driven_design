@@ -45,4 +45,10 @@ measure_pair_t min_pair(const measure_pair_t& a, const measure_pair_t& b)
 	return b;
 }
 
+template <typename SinglePassRange>
+measure_pair_t minimum_pair(const SinglePassRange& xs)
+{
+	return *std::begin(xs);
+}
+
 }
