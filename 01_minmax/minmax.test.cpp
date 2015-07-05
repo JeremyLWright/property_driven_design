@@ -167,7 +167,7 @@ TEST_F(MinMaxFixture, prop_minimum_pair_should_return_a_measure_pair)
 		rep);
 }
 
-TEST(MinMaxDirected, directed_minimum_pair_shouls_return_a_measure_pair)
+TEST(MinMaxDirected, directed_minimum_pair_should_return_a_measure_pair)
 {
 	std::vector<minmax::measure_pair_t> failed_test_case{
 		std::make_pair(1, 2),
