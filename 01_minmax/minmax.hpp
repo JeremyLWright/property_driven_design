@@ -22,10 +22,11 @@ bool is_measure_pair(const measure_pair_t& x)
 	const auto first_element_is_rational = std::is_integral<decltype(x.first)>::value;
 
 	const auto other_element_is_measure_of_first = 
-		//To be a measure the first value must be less-than the second.
-		(x.first < x.second)
+		//To be a measure the first value must be equal-to or less-than the second.
+		(x.first == x.second) ||
+		((x.first < x.second )
 		//And the second element must evenly divide the first element.
-		&& (x.second % x.first == 0);
+		&& (x.second % x.first == 0));
 	return first_element_is_rational
 		&& other_element_is_measure_of_first;
 }
