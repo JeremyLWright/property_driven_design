@@ -71,3 +71,38 @@ TEST_F(MinMaxFixture, prop_maximum_should_give_rational_number)
 			arbitrary,
 			rep);
 }
+
+struct prop_maximum_should_return_a_value_from_the_list_t
+{
+	template <typename SinglePassRange>
+	bool operator()(const SinglePassRange& xs)
+	{
+		const auto m = minmax::maximum(xs);
+		const auto is_present = std::find(
+				std::begin(xs),
+				std::end(xs),
+				m);
+		return is_present != std::end(xs);
+	}
+};
+
+TEST_F(MinMaxFixture, prop_maximum_should_return_a_value_from_the_list)
+{
+	const auto arbitrary = autocheck::discard_if([](const std::vector<size_t>& xs) -> bool { return xs.size() == 0; },
+			autocheck::make_arbitrary<std::vector<size_t>>());
+
+  
+	autocheck::classifier<std::vector<size_t>> cls;
+	cls.trivial([] (const std::vector<size_t>& xs) { return xs.size() == 1; });
+	cls.collect([] (const std::vector<size_t>& xs) { return (xs.size() % 10) * 10; });
+	cls.classify([] (const std::vector<size_t>& xs) { return xs.empty() || xs.size() % 2 == 0; }, "even-length");
+	cls.classify([] (const std::vector<size_t>& xs) { return xs.empty() || (xs.size() % 2 != 0); }, "odd-length");
+	
+	autocheck::check<std::vector<size_t>>(
+		prop_maximum_should_return_a_value_from_the_list_t(),
+		100,
+		arbitrary,
+		rep,
+		cls);
+
+}
