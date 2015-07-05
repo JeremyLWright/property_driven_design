@@ -177,4 +177,39 @@ TEST(MinMaxDirected, directed_minimum_pair_shouls_return_a_measure_pair)
 	EXPECT_TRUE(prop_minimum_pair_should_return_a_measure_pair_t()(failed_test_case));
 }
 
+struct prop_minimum_pair_should_return_the_smallest_pair_t
+{
+	bool operator()(const std::vector<minmax::measure_pair_t>& xs) const
+	{
+		const auto sorted_xs = [xs]()
+		{
+			auto copy_xs = xs;
+			std::sort(
+					std::begin(copy_xs),
+					std::end(copy_xs), 
+					minmax::operator<);
+			return copy_xs;
+		}();
+	
+		const auto first_sorted_element = *std::begin(sorted_xs);
+		const auto test_min_element = minmax::minimum_pair(xs);
+
+		return first_sorted_element.first == test_min_element.first
+			&& first_sorted_element.second == test_min_element.second;
+	}
+};
+
+TEST_F(MinMaxFixture, prop_minimum_pair_should_return_the_smallest_pair)
+{
+	const auto arbitrary = autocheck::discard_if([](const std::vector<minmax::measure_pair_t>& xs) -> bool { return xs.size() == 0; },
+			autocheck::make_arbitrary<std::vector<minmax::measure_pair_t>>());
+  
+	autocheck::check<std::vector<minmax::measure_pair_t>>(
+		prop_minimum_pair_should_return_the_smallest_pair_t
+(),
+		100,
+		arbitrary,
+		rep);
+}
+
 
